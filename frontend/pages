@@ -1,0 +1,106 @@
+import { useState } from 'react'
+
+export default function Home() {
+  const [prompt, setPrompt] = useState('')
+  const [code, setCode] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const generateWebsite = async () => {
+    setLoading(true)
+
+    try {
+      const res = await fetch(
+        'https://myraai-1.onrender.com/generate',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt,
+          }),
+        }
+      )
+
+      const data = await res.json()
+
+      setCode(data.code)
+    } catch (err) {
+      alert('Error generating website')
+    }
+
+    setLoading(false)
+  }
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(code)
+    alert('Code copied')
+  }
+
+  return (
+    <div
+      style={{
+        padding: 20,
+        background: '#000',
+        minHeight: '100vh',
+        color: '#fff',
+        fontFamily: 'Arial',
+      }}
+    >
+      <h1>MYRAAI</h1>
+
+      <p>AI Website & App Builder</p>
+
+      <textarea
+        rows={5}
+        style={{
+          width: '100%',
+          padding: 10,
+          borderRadius: 10,
+        }}
+        placeholder='Create ecommerce website'
+        onChange={(e) => setPrompt(e.target.value)}
+      />
+
+      <br />
+      <br />
+
+      <button
+        onClick={generateWebsite}
+        style={{
+          padding: '10px 20px',
+          borderRadius: 10,
+          cursor: 'pointer',
+        }}
+      >
+        {loading ? 'Generating...' : 'Generate Website'}
+      </button>
+
+      <button
+        onClick={copyCode}
+        style={{
+          marginLeft: 10,
+          padding: '10px 20px',
+          borderRadius: 10,
+          cursor: 'pointer',
+        }}
+      >
+        Copy Code
+      </button>
+
+      <pre
+        style={{
+          background: '#111',
+          color: '#0f0',
+          padding: 20,
+          marginTop: 20,
+          overflow: 'auto',
+          whiteSpace: 'pre-wrap',
+          borderRadius: 10,
+        }}
+      >
+        {code}
+      </pre>
+    </div>
+  )
+}
